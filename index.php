@@ -33,7 +33,7 @@ class AngolaHolidayChecker extends Service{
 
     public function isHolidayOrWeekend($date) {
 		if ($this->apiKey === null) {
-			return "API_KEY não encontrada no arquivo .env";
+			return json_encode(["error" => "API_KEY não encontrada no arquivo .env"]);
 		}
 	
 		$url = $this->apiUrl . $this->apiKey;
@@ -41,20 +41,20 @@ class AngolaHolidayChecker extends Service{
 		$data = $this->fetchDataFromAPI($url);
 	
 		if (is_string($data)) {
-			return $data;
+			return json_encode(["error" => $data]);
 		}
 	
 		if ($this->isHoliday($date, $data) || $this->isWeekend($date)) {
-			echo"true";
+			return json_encode(["isHolidayOrWeekend" => true]);
 		}else{
-            echo"false";
+            return json_encode(["isHolidayOrWeekend" => false]);
         }
 	}
 	
 	public function checker(){
 		if($_SERVER['REQUEST_METHOD'] === 'POST'){
 			$date = file_get_contents('php://input');
-			$this->isHolidayOrWeekend($date);
+			echo $this->isHolidayOrWeekend($date);
 		}
 	}
 }
